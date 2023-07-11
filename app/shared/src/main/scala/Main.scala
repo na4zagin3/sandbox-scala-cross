@@ -1,4 +1,5 @@
 import com.na4zagin3.sandbox.cross.POEntry
+import com.na4zagin3.sandbox.cross.POKey
 
 import scala.collection
 
@@ -9,7 +10,10 @@ object Main {
     println(msg)
 
     val entry = POEntry.Singular(
-      msgid = "abc",
+      key = POKey(
+        msgctxt = None,
+        msgid = "abc",
+      ),
       msgstr = "str"
     )
     println(entry)

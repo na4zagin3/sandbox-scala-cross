@@ -8,11 +8,15 @@ class POParserSpec extends munit.FunSuite {
   test("literalStringBody matches a string without surrounding quotes") {
     assertMatches(POParser.literalStringBody, "abcdef", "abcdef")
     assertMatches(POParser.literalStringBody, "abc\\\"def", "abc\"def")
+    assertMatches(POParser.literalStringBody, "", "")
+    assertMatches(POParser.literalStringBody, " ", " ")
   }
 
   test("literalString matches a string with surrounding quotes") {
     assertMatches(POParser.literalString, "\"abcdef\"", "abcdef")
     assertMatches(POParser.literalString, "\"abc\\\"def\"", "abc\"def")
+    assertMatches(POParser.literalString, "\"\"", "")
+    assertMatches(POParser.literalString, "\" \"", " ")
   }
 
   test("consequenctLiteralStrings matches a string with surrounding quotes") {
@@ -30,21 +34,23 @@ class POParserSpec extends munit.FunSuite {
 
   test("singular matches a singular entry") {
     assertMatches(
-      POParser.singularEntry,
+      POParser.entry,
       """msgid "abc"
 msgstr "def"
 """,
-      POEntry.Singular(msgid = "abc", msgstr = "def")
+      POEntry.Singular(key = POKey(msgid = "abc"), msgstr = "def")
     )
     assertMatches(
-      POParser.singularEntry,
+      POParser.entry,
       """#  translator comment
 msgid "abc"
 msgstr "def"
 """,
       POEntry.Singular(
-        comments = Seq("translator comment"),
-        msgid = "abc",
+        comments = Option("translator comment"),
+        key = POKey(
+          msgid = "abc"
+        ),
         msgstr = "def"
       )
     )

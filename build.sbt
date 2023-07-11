@@ -18,6 +18,8 @@ lazy val parser =
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %%% "scala-parser-combinators" % "2.3.0",
 
+        "org.typelevel" %%% "cats-core" % "2.9.0",
+
         "org.scalameta" %%% "munit" % "1.0.0-M7" % Test,
         "org.scalameta" %% "munit-scalacheck" % "1.0.0-M7" % Test,
       ),

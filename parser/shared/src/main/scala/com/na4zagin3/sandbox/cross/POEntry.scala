@@ -8,25 +8,34 @@ object POFlag:
 
 type POReference = String
 
-enum POEntry:
-  case Singular(
-    comments: Seq[String] = Seq(),
-    extractedComments: Seq[String] = Seq(),
-    references: Seq[POReference] = Seq(),
-    flags: Set[POFlag] = Set(),
+case class POKey(
     msgctxt: Option[String] = None,
     msgid: String,
+)
+
+enum POEntry:
+  case Singular(
+    comments: Option[String] = None,
+    extractedComments: Option[String] = None,
+    references: Seq[POReference] = Seq(),
+    flags: Set[POFlag] = Set(),
+    key: POKey,
     msgstr: String,
   )
   case Plural(
-    comments: Seq[String] = Seq(),
-    extractedComments: Seq[String] = Seq(),
+    comments: Option[String] = None,
+    extractedComments: Option[String] = None,
     references: Seq[POReference] = Seq(),
     flags: Set[POFlag] = Set(),
-    msgctxt: Option[String] = None,
-    msgid: String,
+    key: POKey,
     msgidPlural: String,
     msgstrs: Seq[String],
   )
 
 type POFile = Seq[POEntry]
+
+object POEntry:
+    val TranslatorCommentHeader = "#  "
+    val ExtractedCommentHeader = "#. "
+    val ReferenceCommentHeader = "#: "
+    val FlagCommentHeader = "#, "
