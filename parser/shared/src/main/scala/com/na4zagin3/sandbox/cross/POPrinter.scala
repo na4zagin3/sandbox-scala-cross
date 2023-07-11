@@ -34,30 +34,32 @@ object POPrinter:
     header + literalString(string)
 
   def printSingularEntry(entry: POEntry.Singular) =
-    List[Option[String]](
-      entry.comments.map(printComment(POEntry.TranslatorCommentHeader, _)),
-      entry.extractedComments.map(printComment(POEntry.ExtractedCommentHeader, _)),
-      Some(entry.references.toList.map(POEntry.ReferenceCommentHeader + _).mkString("\n")),
-      entry.key.msgctxt.map(printDirective("msgctxt ", _)),
-      Some(entry.key.msgid).map(printDirective("msgid ", _)),
-      Some(entry.msgstr).map(printDirective("msgstr ", _)),
+    List[Seq[String]](
+      entry.comments.map(printComment(POEntry.TranslatorCommentHeader, _)).toSeq,
+      entry.extractedComments.map(printComment(POEntry.ExtractedCommentHeader, _)).toSeq,
+      entry.references.map(POEntry.ReferenceCommentHeader + _),
+      entry.flags.map(flag => POEntry.FlagCommentHeader + flag.flag).toSeq,
+      entry.key.msgctxt.map(printDirective("msgctxt ", _)).toSeq,
+      List(printDirective("msgid ", entry.key.msgid)),
+      List(printDirective("msgstr ", entry.msgstr)),
     )
     .flatten
-    .mkString("\n")
+    .mkString("", "\n", "\n")
 
 
   def printPluralEntry(entry: POEntry.Plural) =
-    List[Option[String]](
-      entry.comments.map(printComment(POEntry.TranslatorCommentHeader, _)),
-      entry.extractedComments.map(printComment(POEntry.ExtractedCommentHeader, _)),
-      Some(entry.references.toList.map(POEntry.ReferenceCommentHeader + _).mkString("\n")),
-      entry.key.msgctxt.map(printDirective("msgctxt ", _)),
-      Some(entry.key.msgid).map(printDirective("msgid ", _)),
-      Some(entry.msgidPlural).map(printDirective("msgid_plural ", _)),
-      Some(entry.msgstrs.zipWithIndex.map{case (str, index) => printDirective(s"msgstr[$index] ", str)}.mkString("\n")),
+    List[Seq[String]](
+      entry.comments.map(printComment(POEntry.TranslatorCommentHeader, _)).toSeq,
+      entry.extractedComments.map(printComment(POEntry.ExtractedCommentHeader, _)).toSeq,
+      entry.references.map(POEntry.ReferenceCommentHeader + _),
+      entry.flags.map(flag => POEntry.FlagCommentHeader + flag.flag).toSeq,
+      entry.key.msgctxt.map(printDirective("msgctxt ", _)).toSeq,
+      List(printDirective("msgid ", entry.key.msgid)),
+      List(printDirective("msgid_plural ", entry.msgidPlural)),
+      entry.msgstrs.zipWithIndex.map{case (str, index) => printDirective(s"msgstr[$index] ", str)}.toList,
     )
     .flatten
-    .mkString("\n")
+    .mkString("", "\n", "\n")
 
   def printEntry(entry: POEntry) = entry match {
     case entry: POEntry.Singular => printSingularEntry(entry)

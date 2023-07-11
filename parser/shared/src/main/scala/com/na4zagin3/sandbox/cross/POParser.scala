@@ -67,15 +67,15 @@ object POParser extends RegexParsers:
     keyword ~ (" " ~> consequenctLiteralStrings <~ "\n")
 
   def msgctxt: Parser[String] =
-    directive("msgctxt") ^^ { _._2 }
+    directive("msgctxt") ^^ { case index ~ str => str }
   def msgid: Parser[String] =
-    directive("msgid") ^^ { _._2 }
+    directive("msgid") ^^ { case index ~ str => str }
   def msgidPlural: Parser[String] =
-    directive("msgid_plural") ^^ { _._2 }
+    directive("msgid_plural") ^^ { case index ~ str => str }
   def msgstr: Parser[String] =
-    directive("msgstr") ^^ { _._2 }
+    directive("msgstr") ^^ { case index ~ str => str }
   def msgstrsHeader: Parser[Int] =
-    ("msgstr[" ~> """[1-9][0-9]*""".r <~ "]") ^^ { _.toInt }
+    ("msgstr[" ~> """0|[1-9][0-9]*""".r <~ "]") ^^ { _.toInt }
   def msgstrs: Parser[Seq[String]] =
     rep(directive(msgstrsHeader)) ^^ { matched =>
       val map = matched.map { case index ~ str => index -> str }.toMap
@@ -106,7 +106,7 @@ object POParser extends RegexParsers:
               msgstr = str
             )
           )
-        case (Right(strs), Some(idPl)) =>
+        case (Right(strHead :: strTail), Some(idPl)) =>
           success(
             POEntry.Plural(
               comments = trComs,
@@ -115,7 +115,7 @@ object POParser extends RegexParsers:
               flags = flags,
               key = key,
               msgidPlural = idPl,
-              msgstrs = strs
+              msgstrs = NonEmptyList.of(strHead, strTail: _*)
             )
           )
         case (strs, ids) =>

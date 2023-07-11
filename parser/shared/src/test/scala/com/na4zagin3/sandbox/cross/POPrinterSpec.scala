@@ -3,6 +3,7 @@ package com.na4zagin3.sandbox.cross
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop._
 import org.scalacheck.Gen
+import cats.data.NonEmptyList
 
 class POPrinterSpec extends ScalaCheckSuite {
   test("literalString prints a string as a literal string") {
@@ -68,6 +69,7 @@ class POPrinterSpec extends ScalaCheckSuite {
       flags <- Gen.listOf(genFlag).map(_.toSet)
       key <- genPOKey
       msgidPlural <- Gen.asciiStr
+      msgstr <- Gen.asciiStr
       msgstrs <- Gen.listOf(Gen.asciiStr)
     } yield POEntry.Plural(
       comments = comments,
@@ -76,7 +78,7 @@ class POPrinterSpec extends ScalaCheckSuite {
       flags = flags,
       key = key,
       msgidPlural = msgidPlural,
-      msgstrs = msgstrs,
+      msgstrs = NonEmptyList.of(msgstr, msgstrs: _*),
     )
 
   def genPOEntry =
@@ -88,7 +90,7 @@ class POPrinterSpec extends ScalaCheckSuite {
       case Success(matched, _) =>
         assertEquals(matched, expected)
       case result =>
-        fail("failed to parse", clues(result))
+        fail("failed to parse", clues(input, expected, result))
     }
 }
 

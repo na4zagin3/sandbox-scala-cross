@@ -1,5 +1,7 @@
 package com.na4zagin3.sandbox.cross
 
+import cats.data.NonEmptyList
+
 case class POFlag private (flag: String)
 object POFlag:
     def ofString(flag: String): Option[POFlag] =
@@ -29,7 +31,7 @@ enum POEntry:
     flags: Set[POFlag] = Set(),
     key: POKey,
     msgidPlural: String,
-    msgstrs: Seq[String],
+    msgstrs: NonEmptyList[String],
   )
 
 type POFile = Seq[POEntry]
